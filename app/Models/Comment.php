@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Comment extends Model
 {
+    protected $table = 'comments';
+
     protected $fillable = ['description', 'weather_id', 'register_id'];
 
     // Relation polymorphic with Weather
