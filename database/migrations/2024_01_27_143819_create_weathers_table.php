@@ -13,16 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('registros', function (Blueprint $table) {
+        Schema::create('weathers', function (Blueprint $table) {
             $table->id();
-            $table->string('tipo');
-            $table->text('descripcion');
+            $table->string('city');
+            $table->decimal('temperature', 8, 2);
+            $table->decimal('humidity', 5, 2);
             $table->timestamps();
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('registros');
+        Schema::dropIfExists('weathers');
     }
 };

@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Clima;
+use App\Models\Weather;
 use Illuminate\Http\Request;
-use App\Models\Comentario;
+use App\Models\Comment;
 
 class ComentarioController extends Controller
 {
     // Método para mostrar todos los comentarios
     public function index()
     {
-        $comentarios = Comentario::all();
+        $comentarios = Comment::all();
         return response()->json([
             'success' => true,
             'data' => $comentarios,
@@ -21,7 +21,7 @@ class ComentarioController extends Controller
     // Método para mostrar un comentario específico por su ID
     public function show($id)
     {
-        $comentario = Comentario::find($id);
+        $comentario = Comment::find($id);
         if ($comentario) {
             return response()->json([
                 'success' => true,
@@ -54,7 +54,7 @@ class ComentarioController extends Controller
         ];
 
         // Crea el comentario utilizando los datos preparados
-        $comentario = Comentario::create($data);
+        $comentario = Comment::create($data);
 
         return response()->json([
             'success' => true,
@@ -70,7 +70,7 @@ class ComentarioController extends Controller
             // Agrega aquí la validación adicional según tus necesidades
         ]);
 
-        $comentario = Comentario::find($id);
+        $comentario = Comment::find($id);
         if ($comentario) {
             $comentario->update($request->all());
             return response()->json([
@@ -88,7 +88,7 @@ class ComentarioController extends Controller
     // Método para eliminar un comentario existente
     public function destroy($id)
     {
-        $comentario = Comentario::find($id);
+        $comentario = Comment::find($id);
         if ($comentario) {
             $comentario->delete();
             return response()->json([

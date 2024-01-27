@@ -2,94 +2,94 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Clima;
-use App\Models\Registro;
+use App\Models\Weather;
+use App\Models\Register;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 
 
 class RegisterController extends Controller
 {
-    // Método para mostrar todos los registros
+    // Método para mostrar todos los registers
     public function index()
     {
-        $registros = Registro::all();
+        $registers = Register::all();
         return response()->json([
             'success' => true,
-            'data' => $registros,
+            'data' => $registers,
         ]);
     }
 
-    // Método para mostrar un registro específico por su ID
+    // Método para mostrar un register específico por su ID
     public function show($id)
     {
-        $registro = Registro::find($id);
-        if ($registro) {
+        $register = Register::find($id);
+        if ($register) {
             return response()->json([
                 'success' => true,
-                'data' => $registro,
+                'data' => $register,
             ]);
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'No se encontró el registro.',
+                'message' => 'Register was not found.',
             ], 404);
         }
     }
 
-    // Método para almacenar un nuevo registro
+    // Método para almacenar un nuevo register
     public function store(Request $request)
     {
         $request->validate([
-            'tipo' => 'required|string',
-            'descripcion' => 'required|string',
+            'type' => 'required|string',
+            'description' => 'required|string',
         ]);
 
-        $registro = Registro::create($request->all());
+        $register = Register::create($request->all());
 
         return response()->json([
             'success' => true,
-            'data' => $registro,
+            'data' => $register,
         ], 201);
     }
 
-    // Método para actualizar un registro existente
+    // Método para actualizar un register existente
     public function update(Request $request, $id)
     {
         $request->validate([
-            'tipo' => 'required|string',
-            'descripcion' => 'required|string',
+            'type' => 'required|string',
+            'description' => 'required|string',
         ]);
 
-        $registro = Registro::find($id);
-        if ($registro) {
-            $registro->update($request->all());
+        $register = Register::find($id);
+        if ($register) {
+            $register->update($request->all());
             return response()->json([
                 'success' => true,
-                'data' => $registro,
+                'data' => $register,
             ]);
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'No se encontró el registro.',
+                'message' => 'Register was not found.',
             ], 404);
         }
     }
 
-    // Método para eliminar un registro existente
+    // Método para eliminar un register existente
     public function destroy($id)
     {
-        $registro = Registro::find($id);
-        if ($registro) {
-            $registro->delete();
+        $register = Register::find($id);
+        if ($register) {
+            $register->delete();
             return response()->json([
                 'success' => true,
-                'message' => 'El registro se eliminó correctamente.',
+                'message' => 'Register deleted success.',
             ]);
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'No se encontró el registro.',
+                'message' => 'Register was not found.',
             ], 404);
         }
     }

@@ -28,7 +28,7 @@ Route::get('/currentWeatherByCity', [WeatherController::class, 'currentWeatherBy
 Route::post('/createWeatherByCity', [WeatherController::class, 'createWeatherByCity']);
 
 
-//CRUD Registro
+//CRUD Register
 Route::get('/registers', [RegisterController::class, 'index']);
 Route::get('/registers/{id}', [RegisterController::class, 'show']);
 Route::post('/registers', [RegisterController::class, 'store']);
@@ -36,7 +36,7 @@ Route::put('/registers/{id}', [RegisterController::class, 'update']);
 Route::delete('/registers/{id}', [RegisterController::class, 'destroy']);
 
 
-//CRUD Comentario
+//CRUD Comment
 Route::get('/comentarios', [ComentarioController::class, 'index']);
 Route::get('/comentarios/{id}', [ComentarioController::class, 'show']);
 Route::post('/comentarios', [ComentarioController::class, 'store']);
