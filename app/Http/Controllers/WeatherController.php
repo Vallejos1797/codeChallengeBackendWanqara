@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Clima;
+use App\Models\Weather;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use App\Services\WeatherService;
@@ -14,92 +14,92 @@ class WeatherController extends Controller
 
     public function index(): \Illuminate\Http\JsonResponse
     {
-        $climas = Clima::all();
+        $weathers = Weather::all();
         return response()->json([
             'success' => true,
-            'data' => $climas,
+            'data' => $weathers,
         ]);
     }
 
-    // Método para mostrar un registro de clima específico por su ID
+    // Método para mostrar un registro de weather específico por su ID
     public function show($id): \Illuminate\Http\JsonResponse
     {
-        $clima = Clima::find($id);
-        if ($clima) {
+        $weather = Weather::find($id);
+        if ($weather) {
             return response()->json([
                 'success' => true,
-                'data' => $clima,
+                'data' => $weather,
             ]);
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'No se encontró el clima.',
+                'message' => 'Weather was not found.',
             ], 404);
         }
     }
 
-    // Método para almacenar un nuevo registro de clima
+    // Método para almacenar un nuevo registro de weather
     public function store(Request $request): \Illuminate\Http\JsonResponse
     {
         $request->validate([
-            'ciudad' => 'required|string',
-            'temperatura' => 'required|numeric',
-            'humedad' => 'required|numeric',
+            'city' => 'required|string',
+            'temperature' => 'required|numeric',
+            'humidity' => 'required|numeric',
         ]);
 
-        $clima = Clima::create($request->all());
+        $weather = Weather::create($request->all());
 
         return response()->json([
             'success' => true,
-            'data' => $clima,
+            'data' => $weather,
         ], 201);
     }
 
-    // Método para actualizar un registro de clima existente
+    // Método para actualizar un registro de weather existente
     public function update(Request $request, $id): \Illuminate\Http\JsonResponse
     {
         $request->validate([
-            'ciudad' => 'required|string',
-            'temperatura' => 'required|numeric',
-            'humedad' => 'required|numeric',
+            'city' => 'required|string',
+            'temperature' => 'required|numeric',
+            'humidity' => 'required|numeric',
         ]);
 
-        $clima = Clima::find($id);
-        if ($clima) {
-            $clima->update($request->all());
+        $weather = Weather::find($id);
+        if ($weather) {
+            $weather->update($request->all());
             return response()->json([
                 'success' => true,
-                'data' => $clima,
+                'data' => $weather,
             ]);
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'No se encontró el clima.',
+                'message' => 'Weather was not found.',
             ], 404);
         }
     }
 
-    // Método para eliminar un registro de clima existente
+    // Método para eliminar un registro de weather existente
     public function destroy($id): \Illuminate\Http\JsonResponse
     {
-        $clima = Clima::find($id);
-        if ($clima) {
-            $clima->delete();
+        $weather = Weather::find($id);
+        if ($weather) {
+            $weather->delete();
             return response()->json([
                 'success' => true,
-                'message' => 'El clima se eliminó correctamente.',
+                'message' => 'Weather deleted success.',
             ]);
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'No se encontró el clima.',
+                'message' => 'Weather was not found.',
             ], 404);
         }
     }
-
-    public function getInfoWeatherByCityTest(Request $request): \Illuminate\Http\JsonResponse
+    // Function test API Open Weather Map
+    public function testApi(Request $request): \Illuminate\Http\JsonResponse
     {
-        // Validar la entrada (opcional)
+
         $request->validate([
             'city' => 'required|string',
         ]);
@@ -110,7 +110,9 @@ class WeatherController extends Controller
         return response()->json($dataWeather);
     }
 
-    public function getInfoWeatherByCity(Request $request): \Illuminate\Http\JsonResponse
+    // Custom functions
+
+    public function currentWeatherByCity(Request $request): \Illuminate\Http\JsonResponse
     {
         // Validar la entrada (opcional)
         $request->validate([
@@ -120,19 +122,41 @@ class WeatherController extends Controller
         // Obtener la ciudad desde la solicitud
         $city = $request->input('city');
 
-        // Obtener la información del clima utilizando el servicio WeatherService
+        // Obtener la información del weather utilizando el servicio WeatherService
         $dataWeather = WeatherService::getInfoByCity($city);
 
-        // Crear o actualizar el modelo Clima con la información obtenida
-        $clima = Clima::updateOrCreate(
-            ['ciudad' => $city], // Buscar por la ciudad
-            [
-                'temperatura' => $dataWeather['main']['temp'], // Temperatura en Celsius desde la API
-                'humedad' => $dataWeather['main']['humidity'], // Humedad desde la API
-            ]
-        );
+        // Crear una instancia del modelo Weather con los datos del weather
+        $weather = new Weather([
+            'city' => $city,
+            'temperature' => $dataWeather['main']['temp'],
+            'humidity' => $dataWeather['main']['humidity'],
+        ]);
 
-        // Retornar la respuesta con los datos del clima
-        return response()->json($clima);
+        // Retornar la respuesta con los datos del weather, incluyendo la temperatura en Fahrenheit
+        return response()->json($weather);
+    }
+
+    public function createWeatherByCity(Request $request): \Illuminate\Http\JsonResponse
+    {
+        // Validar la entrada (opcional)
+        $request->validate([
+            'city' => 'required|string',
+        ]);
+
+        // Obtener la ciudad desde la solicitud
+        $city = $request->input('city');
+
+        // Obtener la información del weather utilizando el servicio WeatherService
+        $dataWeather = WeatherService::getInfoByCity($city);
+
+        // Crear el modelo Weather con la información obtenida
+        $weather = Weather::create([
+            'city' => $city,
+            'temperature' => $dataWeather['main']['temp'],
+            'humidity' => $dataWeather['main']['humidity'],
+        ]);
+
+        // Retornar la respuesta con los datos del weather
+        return response()->json($weather);
     }
 }

@@ -13,17 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('comentarios', function (Blueprint $table) {
+        Schema::create('weathers', function (Blueprint $table) {
             $table->id();
-            $table->text('contenido');
-            $table->unsignedBigInteger('comentable_id');
-            $table->string('comentable_type');
+            $table->string('city');
+            $table->decimal('temperature', 8, 2);
+            $table->decimal('humidity', 5, 2);
             $table->timestamps();
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('comentarios');
+        Schema::dropIfExists('weathers');
     }
 };

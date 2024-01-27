@@ -13,16 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('registros', function (Blueprint $table) {
+        Schema::create('registers', function (Blueprint $table) {
             $table->id();
-            $table->string('tipo');
-            $table->text('descripcion');
+            $table->string('type');
+            $table->text('description');
             $table->timestamps();
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('registros');
+        Schema::dropIfExists('registers');
     }
 };

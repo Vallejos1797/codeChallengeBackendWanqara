@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\WeatherController;
 use App\Http\Controllers\RegisterController;
-use App\Http\Controllers\ComentarioController;
+use App\Http\Controllers\CommentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -12,18 +12,23 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 // Test API
-Route::get('/weatherByCity', [WeatherController::class, 'getInfoWeatherByCityTest']);
+Route::get('/testApiOWP', [WeatherController::class, 'testApi']);
 
-// CRUD Clima
+
+// Request Basic Weather
 Route::get('/weathers', [WeatherController::class, 'index']);
 Route::get('/weathers/{id}', [WeatherController::class, 'show']);
 Route::post('/weathers', [WeatherController::class, 'store']);
 Route::put('/weathers/{id}', [WeatherController::class, 'update']);
 Route::delete('/weathers/{id}', [WeatherController::class, 'destroy']);
-Route::get('/weatherByCity', [WeatherController::class, 'getInfoWeatherByCity']);
+//Route::get('/createWeatherByCity', [WeatherController::class, 'createInfoWeatherByCity']);
+// Request custom Weather
+
+Route::get('/currentWeatherByCity', [WeatherController::class, 'currentWeatherByCity']);
+Route::post('/createWeatherByCity', [WeatherController::class, 'createWeatherByCity']);
 
 
-//CRUD Registro
+//CRUD Register
 Route::get('/registers', [RegisterController::class, 'index']);
 Route::get('/registers/{id}', [RegisterController::class, 'show']);
 Route::post('/registers', [RegisterController::class, 'store']);
@@ -31,9 +36,9 @@ Route::put('/registers/{id}', [RegisterController::class, 'update']);
 Route::delete('/registers/{id}', [RegisterController::class, 'destroy']);
 
 
-//CRUD Comentario
-Route::get('/comentarios', [ComentarioController::class, 'index']);
-Route::get('/comentarios/{id}', [ComentarioController::class, 'show']);
-Route::post('/comentarios', [ComentarioController::class, 'store']);
-Route::put('/comentarios/{id}', [ComentarioController::class, 'update']);
-Route::delete('/comentarios/{id}', [ComentarioController::class, 'destroy']);
+//CRUD Comment
+Route::get('/comentarios', [CommentController::class, 'index']);
+Route::get('/comentarios/{id}', [CommentController::class, 'show']);
+Route::post('/comentarios', [CommentController::class, 'store']);
+Route::put('/comentarios/{id}', [CommentController::class, 'update']);
+Route::delete('/comentarios/{id}', [CommentController::class, 'destroy']);
