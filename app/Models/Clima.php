@@ -13,7 +13,7 @@ class Clima extends Model
     // Relación uno a muchos con Comentario
     public function comentarios()
     {
-        return $this->morphMany(Comentario::class, 'comentable');
+        return $this->morphMany(Comentario::class, 'commentable');
     }
 
     public function getTemperaturaFahrenheitAttribute()

@@ -123,14 +123,12 @@ class WeatherController extends Controller
         // Obtener la información del clima utilizando el servicio WeatherService
         $dataWeather = WeatherService::getInfoByCity($city);
 
-        // Crear o actualizar el modelo Clima con la información obtenida
-        $clima = Clima::updateOrCreate(
-            ['ciudad' => $city], // Buscar por la ciudad
-            [
-                'temperatura' => $dataWeather['main']['temp'], // Temperatura en Celsius desde la API
-                'humedad' => $dataWeather['main']['humidity'], // Humedad desde la API
-            ]
-        );
+        // Crear el modelo Clima con la información obtenida
+        $clima = Clima::create([
+            'ciudad' => $city,
+            'temperatura' => $dataWeather['main']['temp'],
+            'humedad' => $dataWeather['main']['humidity'],
+        ]);
 
         // Retornar la respuesta con los datos del clima
         return response()->json($clima);

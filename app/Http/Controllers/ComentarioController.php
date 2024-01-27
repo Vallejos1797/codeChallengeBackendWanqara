@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Clima;
 use Illuminate\Http\Request;
 use App\Models\Comentario;
 
@@ -39,10 +40,21 @@ class ComentarioController extends Controller
     {
         $request->validate([
             'contenido' => 'required|string',
-            // Agrega aquí la validación adicional según tus necesidades
+            'commentable_id' => 'required'
         ]);
 
-        $comentario = Comentario::create($request->all());
+        // Obtén el valor de 'commentable_id' del cuerpo JSON de la solicitud
+        $commentableId = $request->input('commentable_id');
+
+        // Crea un nuevo array con los datos requeridos para crear el comentario
+        $data = [
+            'contenido' => $request->input('contenido'),
+            'commentable_id' => $commentableId,
+            'commentable_type' => 1
+        ];
+
+        // Crea el comentario utilizando los datos preparados
+        $comentario = Comentario::create($data);
 
         return response()->json([
             'success' => true,
