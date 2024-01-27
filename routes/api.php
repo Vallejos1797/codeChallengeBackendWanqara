@@ -12,15 +12,20 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 // Test API
-Route::get('/weatherByCity', [WeatherController::class, 'getInfoWeatherByCityTest']);
+Route::get('/testApiOWP', [WeatherController::class, 'testApi']);
 
-// CRUD Clima
+
+// Request Basic Weather
 Route::get('/weathers', [WeatherController::class, 'index']);
 Route::get('/weathers/{id}', [WeatherController::class, 'show']);
 Route::post('/weathers', [WeatherController::class, 'store']);
 Route::put('/weathers/{id}', [WeatherController::class, 'update']);
 Route::delete('/weathers/{id}', [WeatherController::class, 'destroy']);
-Route::get('/weatherByCity', [WeatherController::class, 'getInfoWeatherByCity']);
+//Route::get('/createWeatherByCity', [WeatherController::class, 'createInfoWeatherByCity']);
+// Request custom Weather
+
+Route::get('/currentWeatherByCity', [WeatherController::class, 'currentWeatherByCity']);
+Route::post('/createWeatherByCity', [WeatherController::class, 'createWeatherByCity']);
 
 
 //CRUD Registro

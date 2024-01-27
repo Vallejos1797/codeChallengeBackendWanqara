@@ -96,8 +96,8 @@ class WeatherController extends Controller
             ], 404);
         }
     }
-
-    public function getInfoWeatherByCityTest(Request $request): \Illuminate\Http\JsonResponse
+    // Function test API Open Weather Map
+    public function testApi(Request $request): \Illuminate\Http\JsonResponse
     {
         // Validar la entrada (opcional)
         $request->validate([
@@ -110,7 +110,33 @@ class WeatherController extends Controller
         return response()->json($dataWeather);
     }
 
-    public function getInfoWeatherByCity(Request $request): \Illuminate\Http\JsonResponse
+    // Custom functions
+
+    public function currentWeatherByCity(Request $request): \Illuminate\Http\JsonResponse
+    {
+        // Validar la entrada (opcional)
+        $request->validate([
+            'city' => 'required|string',
+        ]);
+
+        // Obtener la ciudad desde la solicitud
+        $city = $request->input('city');
+
+        // Obtener la información del clima utilizando el servicio WeatherService
+        $dataWeather = WeatherService::getInfoByCity($city);
+
+        // Crear una instancia del modelo Clima con los datos del clima
+        $clima = new Clima([
+            'ciudad' => $city,
+            'temperatura' => $dataWeather['main']['temp'],
+            'humedad' => $dataWeather['main']['humidity'],
+        ]);
+
+        // Retornar la respuesta con los datos del clima, incluyendo la temperatura en Fahrenheit
+        return response()->json($clima);
+    }
+
+    public function createWeatherByCity(Request $request): \Illuminate\Http\JsonResponse
     {
         // Validar la entrada (opcional)
         $request->validate([
