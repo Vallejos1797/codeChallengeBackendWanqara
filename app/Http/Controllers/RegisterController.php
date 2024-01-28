@@ -2,46 +2,69 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Register;
-use Illuminate\Database\QueryException;
+use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
-    /**
-     * Captura un nuevo registro de actividad.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function captureRegister(Request $request): \Illuminate\Http\JsonResponse
+    // Método para mostrar todos los registros
+    public function index()
+    {
+        $registers = Register::all();
+        return response()->json($registers);
+    }
+
+    // Método para mostrar un registro por su ID
+    public function show($id)
+    {
+        $register = Register::with('comments')->find($id);
+        if ($register) {
+            return response()->json($register);
+        } else {
+            return response()->json(['message' => 'Register not found'], 404);
+        }
+    }
+
+    // Método para almacenar un nuevo registro
+    public function store(Request $request)
     {
         $request->validate([
-            'user_id' => 'required|integer',
-            'controller' => 'required|string',
-            'action' => 'required|string',
+            'user_id' => 'required|exists:users,id',
+            'type' => 'required|string',
             'description' => 'required|string',
         ]);
 
-        try {
-            // Crear el registro de actividad
-            $register = Register::create([
-                'user_id' => $request->input('user_id'),
-                'controller' => $request->input('controller'),
-                'action' => $request->input('action'),
-                'description' => $request->input('description'),
-            ]);
+        $register = Register::create($request->all());
+        return response()->json($register, 201);
+    }
 
-            return response()->json([
-                'success' => true,
-                'data' => $register,
-            ], 201);
-        } catch (QueryException $e) {
-            // Manejar errores de la base de datos
-            return response()->json([
-                'success' => false,
-                'message' => 'Error creating activity log: ' . $e->getMessage(),
-            ], 500);
+    // Método para actualizar un registro existente
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'user_id' => 'exists:users,id',
+            'type' => 'string',
+            'description' => 'string',
+        ]);
+
+        $register = Register::find($id);
+        if ($register) {
+            $register->update($request->all());
+            return response()->json($register);
+        } else {
+            return response()->json(['message' => 'Register not found'], 404);
+        }
+    }
+
+    // Método para eliminar un registro existente
+    public function destroy($id)
+    {
+        $register = Register::find($id);
+        if ($register) {
+            $register->delete();
+            return response()->json(['message' => 'Register deleted successfully']);
+        } else {
+            return response()->json(['message' => 'Register not found'], 404);
         }
     }
 }

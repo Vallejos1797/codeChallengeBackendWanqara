@@ -21,9 +21,14 @@ Route::group(['middleware' => 'auth.jwt'], function () {
     Route::post('logout', [AuthController::class, 'logout']);
 
 
+    Route::get('/logsAPI', [CommentController::class, 'requestsLog']);
+
+
+
     // Weather Peticiones que son caturadas en la API para tener un traking para auditorias futuas.
     Route::get('/currentWeatherByCity', [WeatherController::class, 'currentWeatherByCity'])->middleware('log.user.activity');
     Route::post('/createWeatherByCity', [WeatherController::class, 'createWeatherByCity'])->middleware('log.user.activity');
+    Route::get('/getRecordsByCity/{id}', [WeatherController::class, 'showWeatherWithComments'])->middleware('log.user.activity');
 
 
 // TODO Impletar un control de usaurio por su rol para que estos endpoints lo puedan manejar solo los administradores.

@@ -77,4 +77,16 @@ class CommentController extends Controller
             'message' => $message,
         ], $status);
     }
+
+    public function requestsLog(): \Illuminate\Http\JsonResponse
+    {
+        // Obtener todos los comentarios de tipo Register
+        $comments = Comment::where('comentable_type', 'App\\Models\\Register')->get();
+
+        // Puedes devolver los comentarios en la respuesta JSON
+        return response()->json([
+            'success' => true,
+            'data' => $comments,
+        ]);
+    }
 }

@@ -173,4 +173,19 @@ class WeatherController extends Controller
             'message' => 'Weather not found.',
         ], 404);
     }
+
+    public function showWeatherWithComments($id): \Illuminate\Http\JsonResponse
+    {
+
+        $weather = Weather::with('comments')->find($id);
+
+        if ($weather) {
+            return response()->json([
+                'success' => true,
+                'data' => $weather,
+            ]);
+        } else {
+            return $this->weatherNotFoundResponse();
+        }
+    }
 }
