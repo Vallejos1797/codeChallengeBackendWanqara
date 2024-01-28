@@ -30,7 +30,8 @@ class AuthController extends Controller
     public function getAuthenticatedUser()
     {
         try {
-            if (! $user = JWTAuth::parseToken()->authenticate()) {
+            $user = JWTAuth::parseToken()->authenticate();
+            if (! $user) {
                 return response()->json(['error' => 'User not found'], 404);
             }
         } catch (JWTException $e) {
@@ -62,7 +63,7 @@ class AuthController extends Controller
     public function logout()
     {
         try {
-            JWTAuth::invalidate(JWTAuth::getToken());
+            JWTAuth::parseToken()->invalidate();
             return response()->json(['message' => 'Logout successful']);
         } catch (JWTException $e) {
             return response()->json(['error' => 'Failed to logout'], 500);
