@@ -14,7 +14,8 @@ class WeatherController extends Controller
 
     public function index(): \Illuminate\Http\JsonResponse
     {
-        $weathers = Weather::all();
+        $weathers = Weather::with('comments')->get();
+
         return response()->json([
             'success' => true,
             'data' => $weathers,
@@ -48,6 +49,7 @@ class WeatherController extends Controller
         ]);
 
         $weather = Weather::create($request->all());
+        $this->captureActivity($request->user()->id, 'WeatherController', 'store', 'Se ha creado un registro de clima para la ciudad de ' . $request->input('city'));
 
         return response()->json([
             'success' => true,

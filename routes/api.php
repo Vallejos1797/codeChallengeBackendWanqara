@@ -1,14 +1,35 @@
 <?php
 
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\WeatherController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\CommentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Rutas de autenticación y registro de usuarios
+Route::post('login', [AuthController::class, 'authenticate']);
+Route::post('register', [AuthController::class, 'register']);
+
+// Rutas protegidas que requieren autenticación JWT
+Route::group(['middleware' => 'auth.jwt'], function () {
+    // Obtener los detalles del usuario autenticado
+    Route::get('user', [AuthController::class, 'getAuthenticatedUser']);
+
+    // Cerrar sesión (invalidar token JWT)
+    Route::post('logout', [AuthController::class, 'logout']);
+
+    //CRUD USER
+    Route::get('users', [UserController::class, 'index']);
+    Route::get('users/{id}', [UserController::class, 'show']);
+    Route::post('users', [UserController::class, 'store']);
+    Route::put('users/{id}', [UserController::class, 'update']);
+    Route::delete('users/{id}', [UserController::class, 'destroy']);
+
 });
+
+
 
 
 // Test API

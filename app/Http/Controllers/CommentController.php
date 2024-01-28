@@ -40,12 +40,15 @@ class CommentController extends Controller
         // Validate required fields
         $request->validate([
             'description' => 'required|string',
-            'weather_id' => 'required',
-            'register_id' => 'required'
+            'comentable_type' => 'required|string',
+            'comentable_id' => 'required|integer'
         ]);
 
+
         // Create the comment using the provided data
-        $comment = Comment::create($request->all());
+        $comment = Comment::create(['description' => $request->input('description'),
+            'comentable_type' => $request->input('comentable_type'),
+            'comentable_id' => $request->input('comentable_id'),]);
 
         return response()->json([
             'success' => true,
