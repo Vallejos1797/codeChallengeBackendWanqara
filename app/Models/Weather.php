@@ -14,7 +14,7 @@ class Weather extends Model
     // Relation one to many with Comment
     public function comments(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
-        return $this->morphMany(Comment::class, 'weather_id');
+        return $this->morphMany(Comment::class, 'comentable');
     }
 
     public function getTemperatureFahrenheitAttribute(): float|int

@@ -8,16 +8,9 @@ class Comment extends Model
 {
     protected $table = 'comments';
 
-    protected $fillable = ['description', 'weather_id', 'register_id'];
+    protected $fillable = ['description','comentable_type','comentable_id'];
 
-    // Relation polymorphic with Weather
-    public function weather(): \Illuminate\Database\Eloquent\Relations\MorphTo
-    {
-        return $this->morphTo();
-    }
-
-    // Relation polymorphic with  Register
-    public function register(): \Illuminate\Database\Eloquent\Relations\MorphTo
+    public function comentable(): \Illuminate\Database\Eloquent\Relations\MorphTo
     {
         return $this->morphTo();
     }

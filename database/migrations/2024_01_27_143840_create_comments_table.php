@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('comments', function (Blueprint $table) {
             $table->id();
             $table->text('description');
-            $table->unsignedBigInteger('weather_id');
-            $table->string('register_id');
+            $table->unsignedBigInteger('comentable_id');
+            $table->string('comentable_type');
             $table->timestamps();
         });
     }
