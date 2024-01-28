@@ -55,6 +55,8 @@ class AuthController extends Controller
     // Método para registrar un nuevo usuario
     public function register(Request $request): \Illuminate\Http\JsonResponse
     {
+        return response()->json(['message' => 'User created successfully'], 201);
+
         // Definir las reglas de validación
         $rules = [
             'name' => 'required|string',

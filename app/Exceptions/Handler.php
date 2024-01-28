@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Exception;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
@@ -49,8 +50,12 @@ class Handler extends ExceptionHandler
             //
         });
     }
-    public function render($request, Exception|Throwable $exception)
+    public function render($request, Exception|Throwable $exception): \Illuminate\Http\Response|\Illuminate\Http\JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
+        if ($exception instanceof QueryException && $exception->getCode() == 'HY000') {
+            return response()->json(['error' => 'Error de conexión a la base de datos'], 500);
+        }
+
         if ($exception instanceof NotFoundHttpException) {
             return response()->json(['error' => 'Not Found'], 404);
         }
