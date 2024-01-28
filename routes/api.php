@@ -1,5 +1,4 @@
 <?php
-
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WeatherController;
@@ -7,66 +6,38 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\CommentController;
 use Illuminate\Support\Facades\Route;
 
-// Rutas de autenticación y registro de usuarios
+// Authentication and user registration routes
 Route::post('login', [AuthController::class, 'authenticate']);
 Route::post('register', [AuthController::class, 'register']);
 
-// Rutas protegidas que requieren autenticación JWT
+// Protected routes that require JWT authentication
 Route::group(['middleware' => 'auth.jwt'], function () {
 
-    // Obtener los detalles del usuario autenticado
+    // Get details of the authenticated user
     Route::get('user', [AuthController::class, 'getAuthenticatedUser']);
 
-    // Cerrar sesión (invalidar token JWT)
+    // Logout (invalidate JWT token)
     Route::post('logout', [AuthController::class, 'logout']);
 
-
+    // Logging API requests
     Route::get('/logsAPI', [CommentController::class, 'requestsLog']);
 
+    // Weather API endpoints with activity logging middleware
+    Route::middleware('log.user.activity')->group(function () {
+        Route::get('/currentWeatherByCity', [WeatherController::class, 'currentWeatherByCity']);
+        Route::post('/createWeatherByCity', [WeatherController::class, 'createWeatherByCity']);
+        Route::get('/getRecordsByCity/{id}', [WeatherController::class, 'showWeatherWithComments']);
+    });
 
+    // User CRUD operations
+    Route::resource('users', UserController::class)->except(['create', 'edit']);
 
-    // Weather Peticiones que son caturadas en la API para tener un traking para auditorias futuas.
-    Route::get('/currentWeatherByCity', [WeatherController::class, 'currentWeatherByCity'])->middleware('log.user.activity');
-    Route::post('/createWeatherByCity', [WeatherController::class, 'createWeatherByCity'])->middleware('log.user.activity');
-    Route::get('/getRecordsByCity/{id}', [WeatherController::class, 'showWeatherWithComments'])->middleware('log.user.activity');
+    // Weather CRUD operations
+    Route::resource('weathers', WeatherController::class)->except(['create', 'edit']);
 
+    // Register CRUD operations
+    Route::resource('registers', RegisterController::class)->except(['create', 'edit']);
 
-// TODO Impletar un control de usaurio por su rol para que estos endpoints lo puedan manejar solo los administradores.
-    // BASIC CRUD USER
-    Route::get('users', [UserController::class, 'index']);
-    Route::get('users/{id}', [UserController::class, 'show']);
-    Route::post('users', [UserController::class, 'store']);
-    Route::put('users/{id}', [UserController::class, 'update']);
-    Route::delete('users/{id}', [UserController::class, 'destroy']);
-
-// BASIC CRUD WEATHER
-    Route::get('/weathers', [WeatherController::class, 'index']);
-    Route::get('/weathers/{id}', [WeatherController::class, 'show']);
-    Route::post('/weathers', [WeatherController::class, 'store']);
-    Route::put('/weathers/{id}', [WeatherController::class, 'update']);
-    Route::delete('/weathers/{id}', [WeatherController::class, 'destroy']);
-
-
-// BASIC CRUD  REGISTER
-    Route::get('/registers', [RegisterController::class, 'index']);
-    Route::get('/registers/{id}', [RegisterController::class, 'show']);
-    Route::post('/registers', [RegisterController::class, 'store']);
-    Route::put('/registers/{id}', [RegisterController::class, 'update']);
-    Route::delete('/registers/{id}', [RegisterController::class, 'destroy']);
-
-
-// BASIC CRUD COMMENT
-    Route::get('/comentarios', [CommentController::class, 'index']);
-    Route::get('/comentarios/{id}', [CommentController::class, 'show']);
-    Route::post('/comentarios', [CommentController::class, 'store']);
-    Route::put('/comentarios/{id}', [CommentController::class, 'update']);
-    Route::delete('/comentarios/{id}', [CommentController::class, 'destroy']);
-
+    // Comment CRUD operations
+    Route::resource('comments', CommentController::class)->except(['create', 'edit']);
 });
-
-
-
-
-
-
-
