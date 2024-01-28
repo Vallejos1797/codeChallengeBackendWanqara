@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use App\Models\Weather;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use GuzzleHttp\Client;
 use App\Services\WeatherService;
 
 
@@ -98,6 +99,7 @@ class WeatherController extends Controller
             ], 404);
         }
     }
+
     // Function test API Open Weather Map
     public function testApi(Request $request): \Illuminate\Http\JsonResponse
     {
@@ -143,10 +145,12 @@ class WeatherController extends Controller
         // Validar la entrada (opcional)
         $request->validate([
             'city' => 'required|string',
+            'record' => 'required|string',
         ]);
-
+        $currentDateTimeString = Carbon::now()->toDateTimeString();
         // Obtener la ciudad desde la solicitud
         $city = $request->input('city');
+        $record = $request->input('record');
 
         // Obtener la información del weather utilizando el servicio WeatherService
         $dataWeather = WeatherService::getInfoByCity($city);
@@ -157,6 +161,14 @@ class WeatherController extends Controller
             'temperature' => $dataWeather['main']['temp'],
             'humidity' => $dataWeather['main']['humidity'],
         ]);
+
+        if ($weather) {
+            $commentDescription = "$currentDateTimeString $city. $record";
+            $comment = new Comment([
+                'description' => $commentDescription,
+            ]);
+            $weather->comments()->save($comment);
+        }
 
         // Retornar la respuesta con los datos del weather
         return response()->json($weather);
