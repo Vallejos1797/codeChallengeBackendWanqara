@@ -147,30 +147,65 @@ class WeatherController extends Controller
             'city' => 'required|string',
             'record' => 'required|string',
         ]);
-        $currentDateTimeString = Carbon::now()->toDateTimeString();
+
         // Obtener la ciudad desde la solicitud
         $city = $request->input('city');
         $record = $request->input('record');
 
-        // Obtener la información del weather utilizando el servicio WeatherService
-        $dataWeather = WeatherService::getInfoByCity($city);
-
-        // Crear el modelo Weather con la información obtenida
-        $weather = Weather::create([
-            'city' => $city,
-            'temperature' => $dataWeather['main']['temp'],
-            'humidity' => $dataWeather['main']['humidity'],
-        ]);
+        // Buscar el modelo Weather existente por la ciudad
+        $weather = Weather::where('city', $city)->first();
 
         if ($weather) {
-            $commentDescription = "$currentDateTimeString $city. $record";
+            // Si se encuentra el modelo Weather, actualizar sus notas
+            $currentDateTimeString = Carbon::now()->toDateTimeString();
+
+            // Construir la nueva descripción de las notas del clima
+            $newCommentDescription = "Hoy $currentDateTimeString, $city. $record.
+             Información del clima:
+        Temperatura Celsius: {$weather->temperature}.
+        Humedad: {$weather->humidity}.
+        Temperatura Fahrenheit: {$weather->temperature_fahrenheit}
+        ";
             $comment = new Comment([
-                'description' => $commentDescription,
+                'description' => $newCommentDescription,
             ]);
+
+            // Actualizar la descripción de las notas del clima
             $weather->comments()->save($comment);
+
+        } else {
+            // Si no se encuentra el modelo Weather, crear uno nuevo
+            $dataWeather = WeatherService::getInfoByCity($city);
+
+            // Crear el modelo Weather con la información obtenida
+            $weather = Weather::create([
+                'city' => $city,
+                'temperature' => $dataWeather['main']['temp'],
+                'humidity' => $dataWeather['main']['humidity'],
+            ]);
+
+            if ($weather) {
+                // Obtener la fecha y hora actual
+                $currentDateTimeString = Carbon::now()->toDateTimeString();
+
+                // Construir la descripción de las notas del clima
+                $commentDescription = "Hoy $currentDateTimeString, $city. $record.
+            Información del clima:
+            Temperatura Celsius: {$weather->temperature}.
+            Humedad: {$weather->humidity}.
+            Temperatura Fahrenheit: {$weather->temperature_fahrenheit}
+            ";
+
+                // Crear un nuevo comentario asociado al modelo Weather con la descripción construida
+                $comment = new Comment([
+                    'description' => $commentDescription,
+                ]);
+                $weather->comments()->save($comment);
+            }
         }
 
         // Retornar la respuesta con los datos del weather
         return response()->json($weather);
     }
+
 }
