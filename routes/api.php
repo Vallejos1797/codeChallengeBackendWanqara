@@ -20,13 +20,16 @@ Route::group(['middleware' => 'auth.jwt'], function () {
     // Cerrar sesión (invalidar token JWT)
     Route::post('logout', [AuthController::class, 'logout']);
 
-    //CRUD USER
+    // CRUD USER
     Route::get('users', [UserController::class, 'index']);
     Route::get('users/{id}', [UserController::class, 'show']);
     Route::post('users', [UserController::class, 'store']);
     Route::put('users/{id}', [UserController::class, 'update']);
     Route::delete('users/{id}', [UserController::class, 'destroy']);
 
+    // Weather Routes with additional activity logging middleware
+    Route::get('/currentWeatherByCity', [WeatherController::class, 'currentWeatherByCity'])->middleware('log.user.activity');
+    Route::post('/createWeatherByCity', [WeatherController::class, 'createWeatherByCity'])->middleware('log.user.activity');
 });
 
 
@@ -44,9 +47,9 @@ Route::put('/weathers/{id}', [WeatherController::class, 'update']);
 Route::delete('/weathers/{id}', [WeatherController::class, 'destroy']);
 //Route::get('/createWeatherByCity', [WeatherController::class, 'createInfoWeatherByCity']);
 // Request custom Weather
-
-Route::get('/currentWeatherByCity', [WeatherController::class, 'currentWeatherByCity']);
-Route::post('/createWeatherByCity', [WeatherController::class, 'createWeatherByCity']);
+//
+//Route::get('/currentWeatherByCity', [WeatherController::class, 'currentWeatherByCity']);
+//Route::post('/createWeatherByCity', [WeatherController::class, 'createWeatherByCity']);
 
 
 //CRUD Register
