@@ -1,0 +1,47 @@
+{
+    "version": 2,
+    "framework": null,
+    "functions": {
+        "api/index.php": { "runtime": "vercel-php@0.6.0" }
+    },
+    "routes": [{
+        "src": "/(.*)",
+        "dest": "/api/index.php"
+    }],
+    "env": {
+
+        "APP_KEY":"base64:V+uXQ+kv1WZc2dmtMjwakzf9rUw0TK2B8KkGDEWlFI0=",
+
+        "APP_ENV": "production",
+        "APP_DEBUG": "true",
+        "APP_URL": "https://code-challenge-wanqara-q6uioc0hd-aronpc1997s-projects.vercel.app",
+
+        "APP_CONFIG_CACHE": "/tmp/config.php",
+        "APP_EVENTS_CACHE": "/tmp/events.php",
+        "APP_PACKAGES_CACHE": "/tmp/packages.php",
+        "APP_ROUTES_CACHE": "/tmp/routes.php",
+        "APP_SERVICES_CACHE": "/tmp/services.php",
+        "VIEW_COMPILED_PATH": "/tmp",
+
+        "CACHE_DRIVER": "array",
+        "LOG_CHANNEL": "stderr",
+        "SESSION_DRIVER": "cookie",
+
+        "DB_CONNECTION":"mysql",
+        "DB_HOST":"roundhouse.proxy.rlwy.net",
+        "DB_PORT":"12259",
+        "DB_DATABASE":"railway",
+        "DB_USERNAME":"root",
+        "DB_PASSWORD":"4bbCCeG3eH6Dgb551eaeg3AEdfHf1c5c",
+
+        "JWT_SECRET":"qKc6Fuoqnq9BIMwydd6tqzhOTYCZNaGvpoR1RCIvharUzrs3aRZ6WOFmleTRy8dK",
+        "WEATHERPERSON_API_KEY":"311c1292b260dc6583a6fead581fd8d3",
+
+        "VITE_PUSHER_APP_KEY":"${PUSHER_APP_KEY}",
+        "VITE_PUSHER_HOST":"${PUSHER_HOST}",
+        "VITE_PUSHER_PORT":"${PUSHER_PORT}",
+        "VITE_PUSHER_SCHEME":"${PUSHER_SCHEME}",
+        "VITE_PUSHER_APP_CLUSTER":"${PUSHER_APP_CLUSTER}"
+
+    }
+}
