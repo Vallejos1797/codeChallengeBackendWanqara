@@ -1,12 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\Comment;
+use Illuminate\Http\Request;
 use App\Models\Weather;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use App\Services\WeatherService;
+use Illuminate\Support\Facades\Validator;
 
 class WeatherController extends Controller
 {
@@ -35,13 +35,17 @@ class WeatherController extends Controller
 
     public function store(Request $request): \Illuminate\Http\JsonResponse
     {
-        $validatedData = $request->validate([
+        $validator = Validator::make($request->all(), [
             'city' => 'required|string',
             'temperature' => 'required|numeric',
             'humidity' => 'required|numeric',
         ]);
 
-        $weather = Weather::create($validatedData);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+
+        $weather = Weather::create($validator->validated());
 
         $this->createWeatherComment($weather, $request->input('record'));
 
@@ -53,44 +57,54 @@ class WeatherController extends Controller
 
     public function update(Request $request, $id): \Illuminate\Http\JsonResponse
     {
-        $validatedData = $request->validate([
+        $validator = Validator::make($request->all(), [
             'city' => 'required|string',
             'temperature' => 'required|numeric',
             'humidity' => 'required|numeric',
         ]);
 
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+
         $weather = Weather::find($id);
-        if ($weather) {
-            $weather->update($validatedData);
-            $this->updateWeatherWithRecord($weather, $request->input('record'));
-            return response()->json([
-                'success' => true,
-                'data' => $weather,
-            ]);
-        } else {
+        if (!$weather) {
             return $this->weatherNotFoundResponse();
         }
+
+        $weather->update($validator->validated());
+        $this->updateWeatherWithRecord($weather, $request->input('record'));
+
+        return response()->json([
+            'success' => true,
+            'data' => $weather,
+        ]);
     }
 
     public function destroy($id): \Illuminate\Http\JsonResponse
     {
         $weather = Weather::find($id);
-        if ($weather) {
-            $weather->delete();
-            return response()->json([
-                'success' => true,
-                'message' => 'Weather deleted successfully.',
-            ]);
-        } else {
+        if (!$weather) {
             return $this->weatherNotFoundResponse();
         }
+
+        $weather->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Weather deleted successfully.',
+        ]);
     }
 
     public function testApi(Request $request): \Illuminate\Http\JsonResponse
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'city' => 'required|string',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
 
         $city = $request->input('city');
         $dataWeather = WeatherService::getInfoByCity($city);
@@ -100,9 +114,13 @@ class WeatherController extends Controller
 
     public function currentWeatherByCity(Request $request): \Illuminate\Http\JsonResponse
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'city' => 'required|string',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
 
         $city = $request->input('city');
         $dataWeather = WeatherService::getInfoByCity($city);
@@ -118,10 +136,14 @@ class WeatherController extends Controller
 
     public function createWeatherByCity(Request $request): \Illuminate\Http\JsonResponse
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'city' => 'required|string',
             'record' => 'required|string',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
 
         $city = $request->input('city');
         $record = $request->input('record');
@@ -136,7 +158,7 @@ class WeatherController extends Controller
         return response()->json($weather);
     }
 
-    private function createWeatherWithRecord($city, $record)
+    private function createWeatherWithRecord($city, $record): void
     {
         $dataWeather = WeatherService::getInfoByCity($city);
         $weather = Weather::create([
@@ -176,7 +198,6 @@ class WeatherController extends Controller
 
     public function showWeatherWithComments($id): \Illuminate\Http\JsonResponse
     {
-
         $weather = Weather::with('comments')->find($id);
 
         if ($weather) {

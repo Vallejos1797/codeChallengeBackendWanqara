@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
 use App\Models\Comment;
+use Illuminate\Support\Facades\Validator;
 
 class CommentController extends Controller
 {
@@ -25,30 +25,38 @@ class CommentController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'description' => 'required|string',
             'comentable_type' => 'required|string',
             'comentable_id' => 'required|integer'
         ]);
 
-        $comment = Comment::create($request->all());
+        if ($validator->fails()) {
+            return $this->errorResponse($validator->errors(), 422);
+        }
+
+        $comment = Comment::create($validator->validated());
         return $this->successResponse($comment, 201);
     }
 
     public function update(Request $request, $id)
     {
         $comment = Comment::find($id);
-        if ($comment) {
-            $request->validate([
-                'description' => 'required|string',
-                // Validar solo los campos relevantes para la actualización
-            ]);
-
-            $comment->update($request->all());
-            return $this->successResponse($comment);
-        } else {
+        if (!$comment) {
             return $this->errorResponse('The comment was not found.', 404);
         }
+
+        $validator = Validator::make($request->all(), [
+            'description' => 'required|string',
+            // Validate only relevant fields for update
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorResponse($validator->errors(), 422);
+        }
+
+        $comment->update($validator->validated());
+        return $this->successResponse($comment);
     }
 
     public function destroy($id)
@@ -80,10 +88,10 @@ class CommentController extends Controller
 
     public function requestsLog(): \Illuminate\Http\JsonResponse
     {
-        // Obtener todos los comentarios de tipo Register
+        // Get all comments of type Register
         $comments = Comment::where('comentable_type', 'App\\Models\\Register')->get();
 
-        // Puedes devolver los comentarios en la respuesta JSON
+        // You can return the comments in the JSON response
         return response()->json([
             'success' => true,
             'data' => $comments,
